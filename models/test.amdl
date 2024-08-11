@@ -1,0 +1,58 @@
+{
+  "model_is_node": false,
+  "nodes": [
+    {
+      "name": "mqtt_pub",
+      "type": "class",
+      "cfg": {"class":"mqtt_pub","prj":"mqtt","host":"mqtt.local","topic":"test/topic","port":"1883","pulish_only_on_change":false,"retain":true,"qos":"0"},
+      "pos": {"x":257,"y":-243},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"data":{"node":"to_string","pin":"out"}},
+      "raster": "1s",
+      "default_values": {"data":"\"test str\""}
+    },{
+      "name": "mqtt_sub",
+      "type": "class",
+      "cfg": {"class":"mqtt_sub","prj":"mqtt","host":"mqtt.local","port":"1883","topic":"test/topic","parse_json":true},
+      "pos": {"x":-547,"y":-65},
+      "rotate": false,
+      "comment_out": false
+    },{
+      "name": "log_str",
+      "type": "class",
+      "cfg": {"class":"log_str","prj":"utils","prefix":"test/topic data:"},
+      "pos": {"x":295,"y":-62},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"str":{"node":"mqtt_sub","pin":"data"}},
+      "default_values": {"str":""}
+    },{
+      "name": "to_string",
+      "type": "class",
+      "cfg": {"class":"to_string","prj":"utils"},
+      "pos": {"x":-84,"y":-243},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"in":{"node":"rt","pin":"out"}},
+      "default_values": {"in":""}
+    },{
+      "name": "counter",
+      "type": "class",
+      "cfg": {"class":"counter","prj":"math","start":"0","end":"1","step":"0.01","auto_restart":true},
+      "pos": {"x":-547,"y":-245},
+      "rotate": false,
+      "comment_out": false,
+      "raster": "3s"
+    },{
+      "name": "rt",
+      "type": "base",
+      "cfg": {"node":"rt","data_type":"double","start_value":0,"type_header":"","behavior":"last"},
+      "pos": {"x":-273,"y":-227},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"in":{"node":"counter","pin":"out"}},
+      "default_values": {"in":""}
+    }
+  ]
+}
