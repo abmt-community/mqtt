@@ -1,0 +1,26 @@
+# Author: Hendrik van Arragon, 2021
+# SPDX-License-Identifier: MIT
+
+Import('env')
+env.Append(CCFLAGS = ['-std=c++2a','-g','-O3'])
+env.Append(CPPPATH = ['../..'])
+
+src_shared  = ["../../src/linux/io/eio.cpp", 
+			   "../../src/common/json.cpp", 
+			   "../../src/linux/os.cpp", 
+			   "../../src/linux/util/bt_exception.cpp"
+			  ]
+obj_shared2  = env.Object(src_shared)
+obj_shared = [ env.Object(target="eio.o",  source="../../src/linux/io/eio.cpp"),
+               env.Object(target="json.o", source="../../src/common/json.cpp"),
+               env.Object(target="os.o",   source="../../src/linux/os.cpp"),
+               env.Object(target="bt.o",   source="../../src/linux/util/bt_exception.cpp")
+             ]
+
+env.Program("eio_timer_example", ["src/eio_timer_example.cpp", obj_shared])
+env.Program("udp_receiver",      ["src/udp_receiver.cpp", obj_shared])
+env.Program("tcp_client",        ["src/tcp_client.cpp", obj_shared])
+env.Program("tcp_server",        ["src/tcp_server.cpp", obj_shared])
+env.Program("tcp_echo_server",   ["src/tcp_echo_server.cpp", obj_shared])
+env.Program("resolve_example",   ["src/resolve_example.cpp", obj_shared])
+env.Program("json_example",      ["src/json_example.cpp", obj_shared])

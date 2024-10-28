@@ -1,2 +1,4 @@
 .hg*
 build-*/
+mqtt2sql/build
+mqtt2sql/.sconsign.dblite

@@ -1,0 +1,11 @@
+[Unit]
+Description=mqtt2sql
+After=postgresql.service mosquitto.service
+
+[Service]
+ExecStart=/home/hva/ws/mqtt/mqtt2sql/build/mqtt2sql /home/hva/ws/mqtt/mqtt2sql/example_config.json
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

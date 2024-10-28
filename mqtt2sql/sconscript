@@ -1,0 +1,16 @@
+# Author: Hendrik van Arragon, 2021
+# SPDX-License-Identifier: MIT
+
+Import('env')
+env.Append(CCFLAGS = ['-std=c++2a','-g','-O3'])
+env.Append(CPPPATH = ['./shared', "./axe/include"])
+
+src_shared  = ["./shared/src/linux/io/eio.cpp", 
+			   "./shared/src/common/json.cpp",
+			   "./shared/src/common/time.cpp",
+			   "./shared/src/linux/util/bt_exception.cpp",
+			   "./shared/src/common/util/str_utils.cpp"
+			  ]
+obj_shared  = env.Object(src_shared)
+
+env.Program("mqtt2sql", ["main.cpp", obj_shared], LIBS=['pqxx', 'pq', 'mosquitto'])

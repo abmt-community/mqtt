@@ -1,0 +1,16 @@
+{
+    "mqtt": {
+      "host": "localhost",
+      "port": 1883
+    },
+    "db": {
+      "uri": "postgresql://mqtt_user:mqtt_passwd@localhost/mqtt_db",
+      "table": "json_topic",
+      "data_type": "json"
+    },
+    "topics": [
+        "test_topic",
+        "test_topic2"
+    ]
+}
+  
