@@ -53,7 +53,7 @@ Example output of creating a user and a json_topic table:
             NOT VALID
     );
     CREATE TABLE
-    qtt_db=# ALTER TABLE IF EXISTS public.json_data OWNER to mqtt_user;
+    mqtt_db=# ALTER TABLE IF EXISTS public.json_data OWNER to mqtt_user;
     ALTER TABLE
 :: 
 
