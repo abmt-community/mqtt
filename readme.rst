@@ -60,15 +60,19 @@ Example output of creating a user and a json_topic table:
 Setup Mosqitto
 --------------
 ::
+
     apt install mosquitto libmosquitto-dev
 
     /etc/mosquitto/conf.d/local.conf:
 
     listener 1883
     allow_anonymous true
+::
 
 Build
 -----
 ::
+
     scons
     systemctl enable /home/pi/ws/mqtt/mqtt2sql/mqtt2sql.service
+::
