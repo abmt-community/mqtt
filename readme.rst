@@ -16,7 +16,6 @@ Setup Postgres
 Example output of creating a user and a json_topic table:
 
 ::
-
     # su postgres -c psql
     could not change directory to "/home/pi/smart/ws/mqtt/mqtt2sql": Permission denied
     psql (15.8 (Raspbian 15.8-0+deb12u1))
@@ -59,6 +58,7 @@ Example output of creating a user and a json_topic table:
 
 Setup Mosqitto
 --------------
+
 ::
     apt install mosquitto libmosquitto-dev
 
@@ -69,6 +69,7 @@ Setup Mosqitto
 
 Build
 -----
+
 ::
     scons
     systemctl enable /home/pi/ws/mqtt/mqtt2sql/mqtt2sql.service
