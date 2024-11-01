@@ -60,7 +60,7 @@ Example output of creating a user and a json_topic table:
 Setup Mosqitto
 --------------
 ::
-    
+
     apt install mosquitto libmosquitto-dev
 
     /etc/mosquitto/conf.d/local.conf:
