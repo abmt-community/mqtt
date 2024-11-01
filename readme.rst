@@ -7,51 +7,67 @@ Dependencies
 - libmosquitto-dev
 
 
-
 mqtt2sql
 ========
 Setup Postgres
 ---------------
+::
+  apt install postgresql libpqxx-dev
 
-`apt install postgresql libpqxx-dev`
+Example output of creating a user and a json_topic table:
+.. code-block::
+  # su postgres -c psql
+  could not change directory to "/home/pi/smart/ws/mqtt/mqtt2sql": Permission denied
+  psql (15.8 (Raspbian 15.8-0+deb12u1))
+  Type "help" for help.
 
-`
-su postgres -c psql
-postgres=# create database mqtt_db;
-postgres=# create user mqtt_user with encrypted password 'mqtt_passwd';
-postgres=# grant all privileges on database mqtt_db to mqtt_user;
-\connect mqtt_db
-
-mqtt_db=# CREATE SEQUENCE IF NOT EXISTS public.json_topic_id_seq
-    INCREMENT 1
-    START 1
-    MINVALUE 1
-    MAXVALUE 2147483647
-    CACHE 1;
-
-mqtt_db=# CREATE TABLE IF NOT EXISTS public.json_topic
-(
-    id integer NOT NULL DEFAULT nextval('json_topic_id_seq'::regclass),
-    topic character varying(255) COLLATE pg_catalog."default",
-    date timestamp without time zone,
-    data json,
-    CONSTRAINT json_topic_pkey PRIMARY KEY (id)
-);
-
-mqtt_db=# ALTER SEQUENCE public.json_topic_id_seq OWNER TO mqtt_user;
-mqtt_db=# ALTER TABLE IF EXISTS public.json_topic OWNER to mqtt_user;
-`
+  postgres=# create database mqtt_db;
+  CREATE DATABASE
+  postgres=# create user mqtt_user with encrypted password 'mqtt_passwd';
+  CREATE ROLE
+  postgres=# grant all privileges on database mqtt_db to mqtt_user;
+  GRANT
+  postgres=# \connect mqtt_db
+  You are now connected to database "mqtt_db" as user "postgres".
+  mqtt_db=# CREATE TABLE IF NOT EXISTS public.topic
+  (
+      id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+      topic character varying(255) COLLATE pg_catalog."default",
+      CONSTRAINT topic_pkey PRIMARY KEY (id)
+  );
+  CREATE TABLE
+  mqtt_db=# ALTER TABLE IF EXISTS public.topic OWNER to mqtt_user;
+  ALTER TABLE
+  mqtt_db=# CREATE TABLE IF NOT EXISTS public.json_data
+  (
+      id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
+      topic integer NOT NULL,
+      date timestamp without time zone,
+      data jsonb,
+      CONSTRAINT json_data_pkey PRIMARY KEY (id),
+      CONSTRAINT topic_fkey FOREIGN KEY (topic)
+          REFERENCES public.topic (id) MATCH SIMPLE
+          ON UPDATE CASCADE
+          ON DELETE CASCADE
+          NOT VALID
+  );
+  CREATE TABLE
+  qtt_db=# ALTER TABLE IF EXISTS public.json_data OWNER to mqtt_user;
+  ALTER TABLE
+  
 
 Setup Mosqitto
 --------------
-`apt install mosquitto libmosquitto-dev`
+::
+  apt install mosquitto libmosquitto-dev
 
-/etc/mosquitto/conf.d/local.conf:
+  /etc/mosquitto/conf.d/local.conf:
 
-`listener 1883
-allow_anonymous true`
+  listener 1883
+  allow_anonymous true`
 
 Build
 -----
-
-`systemctl enable /home/pi/ws/mqtt/mqtt2sql/mqtt2sql.service`
+::
+    scons
+    systemctl enable /home/pi/ws/mqtt/mqtt2sql/mqtt2sql.service

@@ -5,8 +5,9 @@
     },
     "db": {
       "uri": "postgresql://mqtt_user:mqtt_passwd@localhost/mqtt_db",
-      "table": "json_topic",
-      "data_type": "json"
+      "topic_table": "topic",
+      "data_table": "json_data",
+      "data_type": "jsonb"
     },
     "topics": [
         "test_topic",

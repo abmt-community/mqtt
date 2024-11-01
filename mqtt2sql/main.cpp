@@ -1,7 +1,6 @@
 #include "time.h"
 #include <poll.h>
 #include <iostream>
-#include <vector>
 #include <fstream>
 #include <filesystem>
 #include <abmt/os.h>
@@ -61,6 +60,8 @@ struct mqtt2sql{
 	shared_ptr<pqxx::connection> cx;
 	shared_ptr<pqxx::nontransaction> tx;
 
+	abmt::json topic2id = abmt::json::object();
+
 	mqtt2sql(abmt::json c): config(c){
 		cx = make_shared<pqxx::connection>(config["db"]["uri"].str());
 		tx = make_shared<pqxx::nontransaction>(*cx);
@@ -77,15 +78,38 @@ struct mqtt2sql{
 		fd.events = POLLIN;
 
 		cx->prepare( "insert", 
-		    "INSERT INTO "+ config["db"]["table"].str() + " (topic, date, data) "
-			"VALUES ($1::character varying, $3::timestamp without time zone, $2::"+config["db"]["data_type"].str()+");"
+		    "INSERT INTO "+ config["db"]["data_table"].str() + " (topic, date, data) "
+			"VALUES ($1, $3::timestamp without time zone, $2::"+config["db"]["data_type"].str()+");"
 		);
+
+		//fill topic2id
+		for(auto t: config["topics"]){
+			pqxx::result res = tx->exec_params(
+                "SELECT EXISTS(SELECT 1 FROM " + config["db"]["topic_table"].str() + " WHERE topic = $1)",
+                t.value.str()
+            );
+            
+            if (res[0][0].as<bool>() == false) {
+                cout << "create topic " << t.value.str() << endl;
+				tx->exec_params(
+                	"INSERT INTO " + config["db"]["topic_table"].str() + " (topic) VALUES ($1)",
+                	t.value.str()
+            	);
+            }
+		}
+		for(auto t: config["topics"]){
+			auto row = tx->exec_params1(
+                "SELECT id FROM " + config["db"]["topic_table"].str() + " WHERE topic = $1",
+                t.value.str()
+            );
+            topic2id[t.value.str()] = row[0].as<int>();
+		}
 	}
 
 	void insert(string topic, string value){
 		// (Normally you'd check for valid command-line arguments.)
 		try{
-			tx->exec_prepared("insert", topic, value, abmt::util::str_replace_date("#Y-#M-#D #h:#m:#s.s"));
+			tx->exec_prepared("insert", (int) topic2id[topic], value, abmt::util::str_replace_date("#Y-#M-#D #h:#m:#s.s"));
 		}catch(pqxx::data_exception e){
 			cout << "error parsing data for topic " << topic << endl;
 		}
