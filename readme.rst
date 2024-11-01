@@ -70,8 +70,7 @@ Setup Mosqitto
 
 Build
 -----
-
-::
+``
     scons
     systemctl enable /home/pi/ws/mqtt/mqtt2sql/mqtt2sql.service
-::
+``
