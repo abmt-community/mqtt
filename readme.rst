@@ -57,6 +57,24 @@ Example output of creating a user and a json_topic table:
     ALTER TABLE
 :: 
 
+You may also want to create indexes for faster access.
+
+:: 
+
+    mqtt_db=# CREATE INDEX date_idx
+        ON public.json_data USING btree
+        (date DESC NULLS LAST)
+        WITH (deduplicate_items=True)
+        TABLESPACE pg_default;
+    CREATE INDEX
+    mqtt_db=# CREATE INDEX topic_idx
+        ON public.json_data USING btree
+        (topic)
+        WITH (deduplicate_items=True)
+        TABLESPACE pg_default;
+    CREATE INDEX
+::
+
 Setup Mosqitto
 --------------
 ::

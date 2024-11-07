@@ -2,5 +2,15 @@
   "model": "test",
   "runtime": "live",
   "runtime_configs": {
+    "live": {
+      "cpp_flags": "-std=c++17 -g",
+      "ld_flags": "-g",
+      "inc_path": [
+      ],
+      "ld_path": [
+      ],
+      "libs": [
+      ]
+    }
   }
 }
