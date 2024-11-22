@@ -34,13 +34,13 @@ struct mqtt_sub{
 
 //@node: auto
 //@raster: auto
-struct mqtt_pub{
-    
+struct mqtt_pub_topic{
+    std::string in_topic = "test/topic";
     abmt::json in_data;
     
     std::string param_host = "mqtt.local";
     int param_port = 1883;
-    std::string param_topic = "test/topic";
+    
     bool param_retain = true;
     int param_qos = 0;
     bool param_pulish_only_on_change = true;
@@ -48,6 +48,27 @@ struct mqtt_pub{
     mosquitto* mosq;
     bool connected = false;
     abmt::json last_data;
+    std::string last_topic;
+    
+    void init();
+    void tick();
+    void final();
+};
+
+//@node: auto
+//@raster: auto
+struct mqtt_pub{
+    
+    std::string param_topic = "test/topic";
+    std::string param_host = "mqtt.local";
+    int param_port = 1883;
+    bool param_retain = true;
+    int param_qos = 0;
+    bool param_pulish_only_on_change = true;
+    
+    abmt::json in_data;
+    
+    mqtt_pub_topic publisher;
     
     void init();
     void tick();

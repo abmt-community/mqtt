@@ -90,7 +90,7 @@ void mqtt_sub::final(){
 
 
 static void mqtt_pub_on_connect(struct mosquitto *mosq, void *obj, int reason_code){
-    mqtt_pub* node = (mqtt_pub*)obj;
+    mqtt_pub_topic* node = (mqtt_pub_topic*)obj;
     node->connected = true;
     if(reason_code != 0){
 		abmt::log("error connecting to mqtt server");
@@ -101,11 +101,11 @@ static void mqtt_pub_on_connect(struct mosquitto *mosq, void *obj, int reason_co
 }
 
 static void mqtt_pub_on_disconnect(struct mosquitto *mosq, void *obj, int reason_code){
-    mqtt_pub* node = (mqtt_pub*)obj;
+    mqtt_pub_topic* node = (mqtt_pub_topic*)obj;
     node->connected = false;
 }
 
-void mqtt_pub::init(){
+void mqtt_pub_topic::init(){
     auto lock = mqtt_lock.get_scope_lock();
     if(mqtt_init == false){
         mosquitto_lib_init();
@@ -121,16 +121,17 @@ void mqtt_pub::init(){
 	abmt::die_if(rc != MOSQ_ERR_SUCCESS, "Error starting loop");
 }
 
-void mqtt_pub::tick(){
+void mqtt_pub_topic::tick(){
     mqtt_handle_events(mosq);
     if(connected){
-        if(param_pulish_only_on_change && last_data == in_data){
+        if(param_pulish_only_on_change && last_data == in_data && last_topic == in_topic){
             return;
         }
         last_data = in_data;
+        last_topic = in_topic;
         auto payload = in_data.str();
         mqtt_lock.lock();
-        int rc = mosquitto_publish(mosq, NULL, param_topic.c_str(), payload.size(), payload.c_str(), param_qos, param_retain);
+        int rc = mosquitto_publish(mosq, NULL, in_topic.c_str(), payload.size(), payload.c_str(), param_qos, param_retain);
 	    mqtt_lock.unlock();
 	    if(rc != MOSQ_ERR_SUCCESS){
 	        abmt::log("error pubishing data");
@@ -139,12 +140,35 @@ void mqtt_pub::tick(){
     }
 }
 
-void mqtt_pub::final(){
+void mqtt_pub_topic::final(){
     auto lock = mqtt_lock.get_scope_lock();
     mosquitto_destroy(mosq);
     if(mqtt_init){
         mosquitto_lib_cleanup();
         mqtt_init = false;
     }
+}
+
+void mqtt_pub::init(){
+    publisher.param_host = param_host;
+    publisher.param_port = param_port;
+    publisher.param_retain = param_retain;
+    publisher.param_qos = param_qos;
+    publisher.param_pulish_only_on_change = param_pulish_only_on_change;
+    
+    publisher.in_topic = param_topic;
+    publisher.in_data = in_data;
+    publisher.init();
+}
+
+void mqtt_pub::tick(){
+    publisher.in_topic = param_topic;
+    publisher.in_data = in_data;
+    publisher.tick();
+    
+}
+
+void mqtt_pub::final(){
+    publisher.final();
 }
 

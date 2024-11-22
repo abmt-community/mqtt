@@ -1,0 +1,49 @@
+{
+  "model_is_node": false,
+  "nodes": [
+    {
+      "name": "udp_rcv",
+      "type": "class",
+      "cfg": {"class":"udp_rcv","prj":"io","target":"any","port":"1883"},
+      "pos": {"x":-500,"y":-394},
+      "rotate": false,
+      "comment_out": false
+    },{
+      "name": "parse_json",
+      "type": "class",
+      "cfg": {"class":"parse_json","prj":"utils"},
+      "pos": {"x":-181,"y":-395},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"in":{"node":"udp_rcv","pin":"out"}},
+      "default_values": {"in":""}
+    },{
+      "name": "expression",
+      "type": "expression",
+      "cfg": {"function":"a[\"topic\"]","output_name":"out","output_type":"abmt::json","type_header":"","disable_output":false},
+      "pos": {"x":175,"y":-463},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"a":{"node":"parse_json","pin":"out"}},
+      "default_values": {"a":""}
+    },{
+      "name": "mqtt_pub_topic",
+      "type": "class",
+      "cfg": {"class":"mqtt_pub_topic","prj":"mqtt","host":"mqtt.local","port":"1883","retain":true,"qos":"0","pulish_only_on_change":true},
+      "pos": {"x":508,"y":-389},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"topic":{"node":"expression","pin":"out"},"data":{"node":"expression_1","pin":"out"}},
+      "default_values": {"topic":"\"test/topic\"","data":""}
+    },{
+      "name": "expression_1",
+      "type": "expression",
+      "cfg": {"function":"a[\"data\"]","output_name":"out","output_type":"abmt::json","type_header":"","disable_output":false},
+      "pos": {"x":172,"y":-304},
+      "rotate": false,
+      "comment_out": false,
+      "inputs": {"a":{"node":"parse_json","pin":"out"}},
+      "default_values": {"a":""}
+    }
+  ]
+}
