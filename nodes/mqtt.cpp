@@ -119,6 +119,7 @@ void mqtt_pub_topic::init(){
 	int rc = mosquitto_connect(mosq, param_host.c_str(), param_port, 60);
 	abmt::die_if(rc != MOSQ_ERR_SUCCESS, "Error connecting to mmqt server");
 	abmt::die_if(rc != MOSQ_ERR_SUCCESS, "Error starting loop");
+	mosquitto_loop(mosq, 10000, 1);
 }
 
 void mqtt_pub_topic::tick(){

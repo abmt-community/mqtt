@@ -1,6 +1,0 @@
-{
-  "model": "udp2mqtt",
-  "runtime": "live",
-  "runtime_configs": {
-  }
-}
