@@ -23,6 +23,7 @@ struct pgsql_topic{
     
     std::shared_ptr<pqxx::connection> cx;
 	std::shared_ptr<pqxx::nontransaction> tx;
+    int topic_id = 0;
     
     void init();
     void tick();

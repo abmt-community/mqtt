@@ -73,6 +73,13 @@ You may also want to create indexes for faster access.
         WITH (deduplicate_items=True)
         TABLESPACE pg_default;
     CREATE INDEX
+    mqtt_db=# CREATE INDEX date_topic_idx
+        ON public.json_data USING btree
+        (topic ASC NULLS LAST, date DESC NULLS FIRST)
+        WITH (deduplicate_items=True)
+        TABLESPACE pg_default;
+    CREATE INDEX
+
 ::
 
 Setup Mosqitto
